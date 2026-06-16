@@ -6,3 +6,5 @@ node_modules/
 Thumbs.db
 # large intermediate Bible sources (regenerate with npm run fetch:missing / build:bible)
 scripts/_src/
+
+.vercel

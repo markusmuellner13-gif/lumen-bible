@@ -1,11 +1,11 @@
 /* ===== Lumen service worker ===== */
-const VERSION = 'lumen-v1';
+const VERSION = 'lumen-v2';
 const SHELL = 'lumen-shell-' + VERSION;
 const RUNTIME = 'lumen-runtime-' + VERSION;
 
 const SHELL_ASSETS = [
   '/', '/index.html', '/app.css', '/app.js', '/manifest.webmanifest',
-  '/data/manifest.json', '/data/verses.json',
+  '/data/manifest.json', '/data/verses.json', '/data/devotions.json',
   '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/badge.png',
 ];
 
@@ -99,6 +99,21 @@ async function showFittingVerse() {
     data: { url: `/?verse=${v.book}.${v.c}.${v.v}` },
   });
 }
+
+// Web Push (works when the app is fully closed; delivered by /api/push/run)
+self.addEventListener('push', (e) => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch { data = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(data.title || 'Lumen', {
+    body: data.body || '',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/badge.png',
+    tag: 'lumen-verse',
+    renotify: true,
+    vibrate: [80, 40, 80],
+    data: { url: data.url || '/' },
+  }));
+});
 
 self.addEventListener('periodicsync', (e) => {
   if (e.tag === 'lumen-verse') e.waitUntil(showFittingVerse());

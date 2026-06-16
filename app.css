@@ -122,7 +122,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* Verse of the moment */
 .verse-hero {
   position: relative; overflow: hidden;
-  background: linear-gradient(155deg, var(--accent) 0%, #3a2f63 70%, #2a2150 100%);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpolygon points='150,-30 178,330 122,330'/%3E%3Cpolygon points='150,-30 250,330 205,330'/%3E%3Cpolygon points='150,-30 50,330 95,330'/%3E%3Cpolygon points='150,-30 340,300 295,330'/%3E%3Cpolygon points='150,-30 -40,300 5,330'/%3E%3C/g%3E%3C/svg%3E") top center / 150% auto no-repeat,
+    linear-gradient(155deg, var(--accent) 0%, #3a2f63 70%, #2a2150 100%);
   color: #f5f0ff; border: none;
 }
 :root[data-theme="dark"] .verse-hero { background: linear-gradient(155deg, #3a2f63 0%, #281f47 100%); }
@@ -234,4 +236,89 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .install-banner { display:flex; align-items:center; gap:12px; margin-top:14px; padding:14px; border-radius:14px; background: var(--accent-soft); border:1px solid var(--accent); }
 .install-banner .ib-text { flex:1; font-size:0.88rem; }
-@media (min-width: 560px) { .quick-grid { grid-template-columns: 1fr 1fr; } }
+
+/* ===== Streak chip ===== */
+.streak-chip {
+  display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 14px;
+  padding: 8px 15px; border-radius: 999px; font-weight: 700; font-size: 0.9rem;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-soft);
+}
+.streak-chip.on { background: linear-gradient(120deg, #f6b73c22, #b9882f22); border-color: var(--gold); color: var(--gold); }
+.streak-chip:active { transform: scale(0.97); }
+
+/* ===== Daily devotion card (home) ===== */
+.dev-card {
+  display: block; width: 100%; text-align: left; position: relative; overflow: hidden; border: none; margin-bottom: 18px;
+  color: #f3eefc;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='66' height='114' viewBox='0 0 66 114'%3E%3Cg fill='none' stroke='%23e7b65b' stroke-opacity='0.13' stroke-width='1.4'%3E%3Cpath d='M33 1 L65 28 L65 86 L33 113 L1 86 L1 28 Z'/%3E%3C/g%3E%3C/svg%3E") -8px -10px repeat,
+    radial-gradient(120% 90% at 80% 0%, #4a3a86 0%, #2e2556 55%, #211a44 100%);
+}
+:root[data-theme="dark"] .dev-card { background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='66' height='114' viewBox='0 0 66 114'%3E%3Cg fill='none' stroke='%23e7b65b' stroke-opacity='0.12' stroke-width='1.4'%3E%3Cpath d='M33 1 L65 28 L65 86 L33 113 L1 86 L1 28 Z'/%3E%3C/g%3E%3C/svg%3E") -8px -10px repeat,
+  radial-gradient(120% 90% at 80% 0%, #3a2f6a 0%, #241d46 60%, #1a1438 100%); }
+.dev-card-inner { position: relative; }
+.dev-card .kicker { color: var(--gold-soft); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.64rem; font-weight: 700; }
+.dev-card-title { font-family: var(--scripture); font-size: clamp(1.3rem, 5vw, 1.7rem); margin: 8px 0 4px; line-height: 1.2; }
+.dev-card-ref { color: var(--gold-soft); font-weight: 600; font-size: 0.9rem; }
+.dev-card-cta { display: inline-block; margin-top: 14px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25); padding: 8px 14px; border-radius: 999px; font-size: 0.85rem; }
+.dev-card.done .dev-card-cta { background: var(--gold); color: #2a1c00; border: none; }
+
+/* ===== Devotion view ===== */
+.dev-hero .dev-title { font-family: var(--scripture); font-size: clamp(1.5rem, 6vw, 2rem); margin: 10px 0 12px; }
+.dev-block { margin-top: 4px; }
+.dev-block .prayer-text { font-family: var(--scripture); font-size: 1.08rem; line-height: 1.7; }
+.prayer-bg {
+  position: relative;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='160'%3E%3Cpath d='M30 160 L30 86 Q110 6 190 86 L190 160' fill='none' stroke='%23b9882f' stroke-opacity='0.12' stroke-width='2'/%3E%3C/svg%3E") top center / 70% auto no-repeat,
+    radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--gold) 12%, var(--surface)) 0%, var(--surface) 60%);
+}
+
+/* candle-glow on bottom sheets (verse / prayer) */
+.sheet { background:
+  radial-gradient(140% 70% at 50% 0%, color-mix(in srgb, var(--gold) 9%, var(--surface)) 0%, var(--surface) 55%); }
+
+/* ===== Fluid sizing ===== */
+.greeting { font-size: clamp(1.5rem, 6vw, 2rem); }
+.verse-text { font-size: clamp(1.18rem, 4.6vw, 1.45rem); }
+.reader-title { font-size: clamp(1.3rem, 5vw, 1.7rem); }
+.splash-title { font-size: clamp(2.2rem, 9vw, 2.8rem); }
+.view { padding-left: clamp(14px, 4vw, 22px); padding-right: clamp(14px, 4vw, 22px); }
+
+/* ===== Responsive: tablet ===== */
+@media (min-width: 560px) {
+  .quick-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ===== Responsive: desktop / laptop (sidebar nav) ===== */
+@media (min-width: 900px) {
+  .app { padding-left: 250px; }
+  .tabbar {
+    top: 0; bottom: 0; right: auto; width: 250px; height: 100%;
+    grid-template-columns: 1fr; grid-auto-rows: min-content; align-content: start; gap: 4px;
+    border-top: none; border-right: 1px solid var(--line);
+    padding: 86px 16px 16px; background: var(--bg-soft); backdrop-filter: none;
+  }
+  .tabbar::before {
+    content: "✝ Lumen"; position: absolute; top: 24px; left: 22px;
+    font-family: var(--scripture); font-size: 1.45rem; letter-spacing: 0.08em; color: var(--gold);
+  }
+  .tab { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 13px 16px; border-radius: 12px; font-size: 0.96rem; }
+  .tab-ico { font-size: 1.2rem; }
+  .tab-lbl { font-size: 0.96rem; letter-spacing: 0.01em; }
+  .tab.active { background: var(--surface); box-shadow: var(--shadow); }
+  .topbar { padding-left: 28px; padding-right: 28px; justify-content: flex-end; }
+  .topbar-brand { display: none; }
+  .view { max-width: 780px; margin: 0 auto; padding-top: 26px; padding-bottom: 60px; }
+  .chat-wrap { height: calc(100dvh - 64px - var(--safe-top) - 40px); }
+}
+
+/* ===== Responsive: large desktop (more breathing room) ===== */
+@media (min-width: 1300px) {
+  .view { max-width: 860px; }
+}
+@media (hover: hover) {
+  .book-row:hover, .chap-cell:hover, .quick:hover, .prayer-item:hover, .tab:hover { background: var(--surface-2); }
+  .btn:hover { filter: brightness(1.05); }
+}

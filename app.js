@@ -72,6 +72,27 @@
     },
   };
 
+  Object.assign(I18N.de, {
+    'streak.title': 'Andachts-Serie', 'streak.days': 'Tage in Folge', 'streak.day': 'Tag in Folge',
+    'streak.none': 'Beginne heute deine Andachts-Serie', 'streak.best': 'Bestleistung',
+    'devotion.badge': 'Andacht des Tages', 'devotion.open': 'Andacht öffnen', 'devotion.scripture': 'Schriftwort',
+    'devotion.reflection': 'Betrachtung', 'devotion.prayer': 'Gebet', 'devotion.done': 'Amen — Andacht halten',
+    'devotion.donetoday': 'Heutige Andacht erfüllt 🕊', 'devotion.amen': 'Amen',
+    'notif.push.title': 'Tägliche Verse & Gebets-Erinnerung',
+    'notif.push.sub': 'Auch wenn die App geschlossen ist — ein passender Vers zur Tageszeit.',
+    'toast.devotiondone': 'Andacht erfüllt — Gott segne dich 🕊', 'toast.notifoff': 'Benachrichtigungen deaktiviert',
+  });
+  Object.assign(I18N.en, {
+    'streak.title': 'Devotion streak', 'streak.days': 'days in a row', 'streak.day': 'day in a row',
+    'streak.none': 'Begin your devotion streak today', 'streak.best': 'Best',
+    'devotion.badge': 'Today’s Devotion', 'devotion.open': 'Open devotion', 'devotion.scripture': 'Scripture',
+    'devotion.reflection': 'Reflection', 'devotion.prayer': 'Prayer', 'devotion.done': 'Amen — pray the devotion',
+    'devotion.donetoday': 'Today’s devotion complete 🕊', 'devotion.amen': 'Amen',
+    'notif.push.title': 'Daily verses & prayer reminders',
+    'notif.push.sub': 'Even when the app is closed — a fitting verse for the time of day.',
+    'toast.devotiondone': 'Devotion complete — God bless you 🕊', 'toast.notifoff': 'Notifications disabled',
+  });
+
   // ---------- State ----------
   const store = {
     get lang() { return localStorage.getItem('lumen.lang') || ((navigator.language || 'de').startsWith('en') ? 'en' : 'de'); },
@@ -100,6 +121,24 @@
     if (bookCache[key]) return bookCache[key];
     const data = await (await fetch(`/data/${lang}/${id}.json`)).json();
     bookCache[key] = data; return data;
+  }
+  let DEVOTIONS = null;
+  async function getDevotions() { return DEVOTIONS || (DEVOTIONS = (await (await fetch('/data/devotions.json')).json()).devotions); }
+  function dayOfYear(d = new Date()) { return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000); }
+  async function todaysDevotion() { const l = await getDevotions(); return l[dayOfYear() % l.length]; }
+
+  // ---------- Streak ----------
+  const pad2 = (n) => String(n).padStart(2, '0');
+  function localDateStr(d = new Date()) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function getStreak() { try { return JSON.parse(localStorage.getItem('lumen.streak')) || { count: 0, longest: 0, last: null }; } catch { return { count: 0, longest: 0, last: null }; } }
+  function isDoneToday() { return getStreak().last === localDateStr(); }
+  function markDevotionDone() {
+    const s = getStreak(); const today = localDateStr();
+    if (s.last === today) return s;
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    s.count = (s.last === localDateStr(y)) ? (s.count || 0) + 1 : 1;
+    s.longest = Math.max(s.longest || 0, s.count); s.last = today;
+    localStorage.setItem('lumen.streak', JSON.stringify(s)); return s;
   }
 
   // ---------- Time helpers ----------
@@ -141,7 +180,8 @@
   }
   function navigate(name, params = {}) {
     current = { name, params };
-    setActiveTab(['home', 'bible', 'companion', 'prayers', 'settings'].includes(name) ? name : (name === 'chapters' || name === 'reader' ? 'bible' : name));
+    const tabMap = { chapters: 'bible', reader: 'bible', devotion: 'home' };
+    setActiveTab(tabMap[name] || name);
     view.scrollTop = 0; window.scrollTo(0, 0);
     const fn = VIEWS[name] || VIEWS.home;
     view.classList.remove('view-enter'); void view.offsetWidth; view.classList.add('view-enter');
@@ -153,9 +193,22 @@
 
   VIEWS.home = async () => {
     const b = timeBucket();
+    const d = await todaysDevotion();
+    const s = getStreak();
+    const done = isDoneToday();
+    const streakLabel = s.count > 0 ? `🔥 ${s.count} ${s.count === 1 ? t('streak.day') : t('streak.days')}` : t('streak.none');
     view.innerHTML = `
       <div class="greeting">${t('greet.' + b)}</div>
       <div class="greeting-sub">${t('greet.sub.' + b)}</div>
+      <button class="streak-chip ${s.count > 0 ? 'on' : ''}" data-act="devotion">${streakLabel}</button>
+      <button class="card dev-card ${done ? 'done' : ''}" data-act="devotion">
+        <div class="dev-card-inner">
+          <div class="kicker">${t('devotion.badge')}${done ? ' · 🕊' : ''}</div>
+          <div class="dev-card-title">${esc(d.title[LANG])}</div>
+          <div class="dev-card-ref">${esc(d.ref[LANG])}</div>
+          <span class="dev-card-cta">${done ? t('devotion.donetoday') : t('devotion.open')} ›</span>
+        </div>
+      </button>
       <div id="verseHero"></div>
       <div class="section-title">${LANG === 'de' ? 'Schnellzugriff' : 'Quick access'}</div>
       <div class="quick-grid">
@@ -167,12 +220,37 @@
       <div id="installSlot"></div>`;
     renderVerseHero(await pickVerse(b));
     $('#verseHero').addEventListener('click', onVerseHeroClick);
+    view.querySelectorAll('[data-act="devotion"]').forEach((el) => el.addEventListener('click', () => navigate('devotion')));
     view.querySelectorAll('.quick').forEach((q) => q.addEventListener('click', () => {
       const a = q.dataset.act;
       if (a === 'continue') { const l = store.last; if (l) navigate('reader', l); else navigate('bible'); }
       else navigate(a === 'bible' ? 'bible' : a);
     }));
     maybeRenderInstall($('#installSlot'));
+  };
+
+  VIEWS.devotion = async () => {
+    const d = await todaysDevotion();
+    const done = isDoneToday();
+    const s = getStreak();
+    view.innerHTML = `
+      <div class="crumbs"><button data-nav="home">${t('nav.today')}</button> › <span>${t('devotion.badge')}</span></div>
+      <div class="card dev-hero verse-hero">
+        <div class="kicker">${t('devotion.badge')}</div>
+        <h2 class="dev-title">${esc(d.title[LANG])}</h2>
+        <div class="verse-text" style="font-size:1.2rem">“${esc(d.text[LANG])}”</div>
+        <div class="verse-ref">${esc(d.ref[LANG])}</div>
+        <div class="verse-actions"><button class="btn btn-ghost" id="devRead">${t('verse.read')}</button></div>
+      </div>
+      <div class="section-title">${t('devotion.reflection')}</div>
+      <div class="card dev-block"><div class="prayer-text">${esc(d.reflection[LANG])}</div></div>
+      <div class="section-title">${t('devotion.prayer')}</div>
+      <div class="card dev-block prayer-bg"><div class="prayer-text">${esc(d.prayer[LANG])}</div></div>
+      <button class="btn ${done ? 'btn-soft' : 'btn-primary'} btn-block" id="devDone" ${done ? 'disabled' : ''} style="margin-top:20px">${done ? '🕊 ' + t('devotion.donetoday') : t('devotion.done')}</button>
+      <div class="center muted" style="margin-top:14px">🔥 ${s.count} ${s.count === 1 ? t('streak.day') : t('streak.days')}${s.longest > s.count ? ` · ${t('streak.best')}: ${s.longest}` : ''}</div>`;
+    $('.crumbs [data-nav="home"]').addEventListener('click', () => navigate('home'));
+    $('#devRead').addEventListener('click', () => navigate('reader', { id: d.book, ch: d.c, scrollVerse: d.v }));
+    if (!done) $('#devDone').addEventListener('click', () => { markDevotionDone(); toast(t('toast.devotiondone')); navigate('devotion'); });
   };
 
   let heroVerse = null;
@@ -390,7 +468,7 @@
         <div class="seg" id="segSize"><button data-v="s" class="${store.textSize === 's' ? 'on' : ''}">A</button><button data-v="m" class="${store.textSize === 'm' ? 'on' : ''}" style="font-size:1rem">A</button><button data-v="l" class="${store.textSize === 'l' ? 'on' : ''}" style="font-size:1.2rem">A</button></div></div></div>
       <div class="section-title">${t('set.notif')}</div>
       <div class="card set-group">
-        <div class="set-row"><div><div class="s-label">${t('set.notif')}</div><div class="s-sub">${t('set.notif.sub')}</div></div>
+        <div class="set-row"><div><div class="s-label">${t('set.notif')}</div><div class="s-sub">${t('notif.push.sub')}</div></div>
           <div class="switch ${n.enabled ? 'on' : ''}" id="notifSwitch" role="switch" aria-checked="${n.enabled}"></div></div>
         <div id="notifDetail" style="${n.enabled ? '' : 'display:none'}">
           <div class="s-sub" style="margin-top:6px">${t('set.notif.windows')}</div>
@@ -411,6 +489,7 @@
     $('#notifSwitch').addEventListener('click', toggleNotif);
     view.querySelectorAll('#notifTimes .nt').forEach((b) => b.addEventListener('click', () => {
       const n2 = store.notif; n2.windows[b.dataset.w] = !n2.windows[b.dataset.w]; store.notif = n2; b.classList.toggle('on');
+      if (n2.enabled) subscribePush(); // update windows on the server
     }));
     $('#notifTest')?.addEventListener('click', sendTestNotification);
     maybeRenderInstall($('#installSlot2'));
@@ -442,10 +521,48 @@
       if (perm === 'default') perm = await Notification.requestPermission();
       if (perm !== 'granted') { toast(t('toast.notifblocked')); return; }
       n.enabled = true; store.notif = n;
-      await registerPeriodicSync();
+      await subscribePush();          // true background push (works when app is closed)
+      await registerPeriodicSync();   // Chromium fallback
       toast(t('toast.notifon'));
-    } else { n.enabled = false; store.notif = n; }
+    } else {
+      n.enabled = false; store.notif = n;
+      await unsubscribePush();
+      toast(t('toast.notifoff'));
+    }
     navigate('settings');
+  }
+  function urlB64ToUint8Array(base64) {
+    const pad = '='.repeat((4 - (base64.length % 4)) % 4);
+    const b = (base64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(b); return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+  }
+  async function subscribePush() {
+    try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false;
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        const { key } = await (await fetch('/api/push/public-key')).json();
+        if (!key) return false; // push backend not configured yet
+        sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(key) });
+      }
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      await fetch('/api/push/subscribe', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: sub.toJSON(), tz, lang: LANG, windows: store.notif.windows, prayer: true }),
+      });
+      return true;
+    } catch (e) { return false; }
+  }
+  async function unsubscribePush() {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        await fetch('/api/push/unsubscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint }) }).catch(() => {});
+        await sub.unsubscribe().catch(() => {});
+      }
+    } catch {}
   }
   async function registerPeriodicSync() {
     try {
@@ -511,7 +628,7 @@
     const vp = params.get('verse');
     const np = params.get('nav');
     if (vp) { const [id, ch, v] = vp.split('.'); navigate('reader', { id, ch: +ch, scrollVerse: +v }); history.replaceState(null, '', '/'); }
-    else if (np && ['home', 'bible', 'companion', 'prayers', 'settings'].includes(np)) { navigate(np); history.replaceState(null, '', '/'); }
+    else if (np && ['home', 'bible', 'companion', 'prayers', 'settings', 'devotion'].includes(np)) { navigate(np); history.replaceState(null, '', '/'); }
   }
 
   document.addEventListener('DOMContentLoaded', boot);

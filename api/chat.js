@@ -1,10 +1,13 @@
 // Lumen — Spiritual Companion (Vercel Node serverless function)
-// Talks to Anthropic Claude with a strictly Catholic, pastoral system prompt.
-// Requires env var ANTHROPIC_API_KEY (set in Vercel project settings).
+// Strictly Catholic, pastoral. Provider-agnostic:
+//   1. GEMINI_API_KEY  -> Google Gemini (free tier, recommended)
+//   2. ANTHROPIC_API_KEY -> Anthropic Claude
+// Set whichever you have in Vercel env vars.
 
 export const config = { maxDuration: 30 };
 
-const MODEL = process.env.LUMEN_MODEL || 'claude-haiku-4-5';
+const GEMINI_MODEL = process.env.LUMEN_GEMINI_MODEL || 'gemini-2.5-flash';
+const CLAUDE_MODEL = process.env.LUMEN_CLAUDE_MODEL || 'claude-haiku-4-5';
 
 const SYSTEM = {
   de: `Du bist „Lumen“, ein warmherziger, demütiger geistlicher Begleiter im Geist der römisch-katholischen Kirche. Deine einzige Aufgabe ist es, Menschen im Glauben zu begleiten.
@@ -35,55 +38,57 @@ You do not replace confession, the pastoral care of a priest, the sacraments, or
 Always answer in English. Be loving but not overly long.`,
 };
 
-function clip(s, n) { return typeof s === 'string' ? s.slice(0, n) : ''; }
+const clip = (s, n) => (typeof s === 'string' ? s.slice(0, n) : '');
+
+async function askGemini(apiKey, lang, messages) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM[lang] }] },
+      contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+      generationConfig: { temperature: 0.7, maxOutputTokens: 900 },
+    }),
+  });
+  if (!r.ok) { const d = await r.text().catch(() => ''); throw new Error('gemini ' + r.status + ' ' + d.slice(0, 300)); }
+  const data = await r.json();
+  return (data.candidates?.[0]?.content?.parts || []).map((p) => p.text).filter(Boolean).join('\n').trim();
+}
+
+async function askClaude(apiKey, lang, messages) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: CLAUDE_MODEL, max_tokens: 900, temperature: 0.7, system: SYSTEM[lang], messages }),
+  });
+  if (!r.ok) { const d = await r.text().catch(() => ''); throw new Error('claude ' + r.status + ' ' + d.slice(0, 300)); }
+  const data = await r.json();
+  return (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n').trim();
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'method' }); return; }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) { res.status(503).json({ error: 'not_configured' }); return; }
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const claudeKey = process.env.ANTHROPIC_API_KEY;
+  if (!geminiKey && !claudeKey) { res.status(503).json({ error: 'not_configured' }); return; }
 
   let body = req.body;
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch { body = {}; } }
   const lang = body?.lang === 'en' ? 'en' : 'de';
   let messages = Array.isArray(body?.messages) ? body.messages : [];
-
-  // sanitize: keep last 12, only user/assistant, cap length
   messages = messages
     .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
     .slice(-12)
     .map((m) => ({ role: m.role, content: clip(m.content, 2000) }));
-  if (!messages.length || messages[0].role !== 'user') {
-    res.status(400).json({ error: 'bad_request' }); return;
-  }
+  if (!messages.length || messages[0].role !== 'user') { res.status(400).json({ error: 'bad_request' }); return; }
 
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 800,
-        temperature: 0.7,
-        system: SYSTEM[lang],
-        messages,
-      }),
-    });
-
-    if (!r.ok) {
-      const detail = await r.text().catch(() => '');
-      console.error('Anthropic error', r.status, detail.slice(0, 500));
-      res.status(502).json({ error: 'upstream' }); return;
-    }
-    const data = await r.json();
-    const reply = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n').trim();
+    const reply = geminiKey ? await askGemini(geminiKey, lang, messages) : await askClaude(claudeKey, lang, messages);
     res.status(200).json({ reply: reply || (lang === 'de' ? 'Friede sei mit dir.' : 'Peace be with you.') });
   } catch (err) {
-    console.error('chat handler error', err);
-    res.status(500).json({ error: 'server' });
+    console.error('chat handler error', String(err).slice(0, 400));
+    res.status(502).json({ error: 'upstream' });
   }
 }

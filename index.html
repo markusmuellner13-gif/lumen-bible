@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>Lumen — Katholische Bibel & Gebet</title>
+  <meta name="description" content="Lumen — die katholische Bibel auf Deutsch und Englisch, mit tageszeit-passenden Versen, Gebeten und einem geistlichen Begleiter. Bringe das Wort Gottes zu mehr Menschen." />
+  <meta name="theme-color" content="#1a1530" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lumen" />
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <!-- Loading / splash screen -->
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash-glow"></div>
+    <div class="splash-cross" role="img" aria-label="Lumen">
+      <svg viewBox="0 0 100 140" width="76" height="106" aria-hidden="true">
+        <defs>
+          <linearGradient id="goldgrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffe9b0" />
+            <stop offset="1" stop-color="#e7b65b" />
+          </linearGradient>
+        </defs>
+        <rect x="42" y="6" width="16" height="128" rx="5" fill="url(#goldgrad)" />
+        <rect x="14" y="40" width="72" height="16" rx="5" fill="url(#goldgrad)" />
+      </svg>
+    </div>
+    <div class="splash-title">Lumen</div>
+    <div class="splash-tagline">Das Licht des Wortes</div>
+    <div class="splash-spinner"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- App shell -->
+  <div id="app" class="app" hidden>
+    <header class="topbar">
+      <button class="topbar-brand" data-nav="home" aria-label="Lumen Start">
+        <svg class="brand-cross" viewBox="0 0 100 140" width="18" height="25" aria-hidden="true">
+          <rect x="42" y="6" width="16" height="128" rx="5" fill="currentColor" />
+          <rect x="14" y="40" width="72" height="16" rx="5" fill="currentColor" />
+        </svg>
+        <span>Lumen</span>
+      </button>
+      <button id="langToggle" class="lang-toggle" aria-label="Sprache wechseln">
+        <span class="lang-de">DE</span><span class="lang-sep">·</span><span class="lang-en">EN</span>
+      </button>
+    </header>
+
+    <main id="view" class="view" tabindex="-1"></main>
+
+    <nav class="tabbar" aria-label="Navigation">
+      <button class="tab" data-nav="home"><span class="tab-ico" aria-hidden="true">✦</span><span class="tab-lbl" data-i18n="nav.today">Heute</span></button>
+      <button class="tab" data-nav="bible"><span class="tab-ico" aria-hidden="true">📖</span><span class="tab-lbl" data-i18n="nav.bible">Bibel</span></button>
+      <button class="tab" data-nav="companion"><span class="tab-ico" aria-hidden="true">✝</span><span class="tab-lbl" data-i18n="nav.companion">Begleiter</span></button>
+      <button class="tab" data-nav="prayers"><span class="tab-ico" aria-hidden="true">🕯</span><span class="tab-lbl" data-i18n="nav.prayers">Gebete</span></button>
+      <button class="tab" data-nav="settings"><span class="tab-ico" aria-hidden="true">☰</span><span class="tab-lbl" data-i18n="nav.settings">Mehr</span></button>
+    </nav>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "lumen-bible",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lumen — the complete Catholic Bible (German & English) as an installable PWA, with time-fitting verses, prayers, and a spiritual AI companion.",
+  "type": "module",
+  "scripts": {
+    "build:bible": "node scripts/build-bible.mjs",
+    "build:icons": "node scripts/gen-icons.mjs",
+    "fetch:missing": "node scripts/fetch-missing-de.mjs"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

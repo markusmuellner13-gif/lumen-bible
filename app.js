@@ -393,10 +393,17 @@
     if (seed) { box.value = seed; box.dispatchEvent(new Event('input')); box.focus(); }
   };
 
+  function formatBot(text) {
+    return esc(text)
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|\n)\s*[*•]\s+/g, '$1• ')
+      .replace(/\n/g, '<br>');
+  }
   function appendMsg(kind, text) {
     const scroll = $('#chatScroll'); if (!scroll) return null;
     const intro = scroll.querySelector('.chat-intro'); if (intro) intro.remove();
-    const el = document.createElement('div'); el.className = 'msg ' + kind; el.textContent = text;
+    const el = document.createElement('div'); el.className = 'msg ' + kind;
+    if (kind === 'bot') el.innerHTML = formatBot(text); else el.textContent = text;
     scroll.appendChild(el); scroll.scrollTop = scroll.scrollHeight; return el;
   }
 
@@ -415,7 +422,7 @@
       if (!res.ok) throw new Error('http ' + res.status);
       const data = await res.json();
       const reply = data.reply || t('comp.error');
-      typing.textContent = reply;
+      typing.innerHTML = formatBot(reply);
       chatHistory.push({ role: 'assistant', content: reply });
     } catch (err) {
       typing.textContent = t('comp.error'); chatHistory.pop();

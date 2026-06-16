@@ -48,7 +48,8 @@ async function askGemini(apiKey, lang, messages) {
     body: JSON.stringify({
       system_instruction: { parts: [{ text: SYSTEM[lang] }] },
       contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-      generationConfig: { temperature: 0.7, maxOutputTokens: 900 },
+      // thinkingBudget: 0 keeps the whole token budget for the visible answer (no truncation)
+      generationConfig: { temperature: 0.7, maxOutputTokens: 1200, thinkingConfig: { thinkingBudget: 0 } },
     }),
   });
   if (!r.ok) { const d = await r.text().catch(() => ''); throw new Error('gemini ' + r.status + ' ' + d.slice(0, 300)); }

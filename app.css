@@ -290,6 +290,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .verse-page .verse-text { font-size: clamp(1.4rem, 5.5vw, 1.95rem); line-height: 1.6; margin: 14px 0 18px; }
 .verse-page .verse-ref { font-size: 1rem; }
 .verse-page .verse-actions { margin-top: 22px; }
+/* swapping to "another verse" keeps the card steady, fades the text */
+.verse-page.swap { animation: none; }
+.verse-page.swap .verse-text, .verse-page.swap .verse-ref { animation: verseSwap 0.42s ease-out both; }
+.verse-page.swap .verse-ref { animation-delay: 0.05s; }
+@keyframes verseSwap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .prayer-page { color: var(--ink); }
 .prayer-page .kicker { color: var(--gold); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.68rem; font-weight: 700; }

@@ -337,29 +337,45 @@
 
   VIEWS.verse = async ({ id, ch, v }) => {
     const m = await getManifest();
-    const b = m.books.find((x) => x.id === id);
-    const data = await getBook(id, LANG);
-    const text = (data.chapters[ch] || {})[v] || '';
-    const ref = LANG === 'de' ? `${b.de.name} ${ch},${v}` : `${b.en.name} ${ch}:${v}`;
-    view.innerHTML = `
-      <div class="crumbs"><button data-nav="bible">${t('nav.bible')}</button> › <button data-nav="reader">${esc(b[LANG].name)} ${ch}</button> › <span>${esc(LANG === 'de' ? 'V. ' + v : 'v. ' + v)}</span></div>
-      <div class="card verse-hero verse-page">
-        <div class="kicker">${t('devotion.scripture')}</div>
-        <div class="verse-text">“${esc(text)}”</div>
-        <div class="verse-ref">${esc(ref)}</div>
-        <div class="verse-actions">
-          <button class="btn btn-primary" data-a="read">${t('verse.read')}</button>
-          <button class="btn btn-ghost" data-a="ask">✝ ${t('sheet.ask')}</button>
-          <button class="btn btn-ghost" data-a="share">↗ ${t('sheet.share')}</button>
-          <button class="btn btn-ghost" data-a="copy">⧉ ${t('sheet.copy')}</button>
-        </div>
-      </div>`;
-    $('.crumbs [data-nav="bible"]').addEventListener('click', () => navigate('bible'));
-    $('.crumbs [data-nav="reader"]').addEventListener('click', () => navigate('reader', { id, ch, scrollVerse: v }));
-    view.querySelector('[data-a="read"]').addEventListener('click', () => navigate('reader', { id, ch, scrollVerse: v }));
-    view.querySelector('[data-a="copy"]').addEventListener('click', () => { navigator.clipboard?.writeText(`“${text}” — ${ref}`); toast(t('toast.copied')); });
-    view.querySelector('[data-a="share"]').addEventListener('click', () => shareVerse(text, ref));
-    view.querySelector('[data-a="ask"]').addEventListener('click', () => navigate('companion', { seed: (LANG === 'de' ? 'Hilf mir, diesen Vers zu verstehen: ' : 'Help me understand this verse: ') + `“${text}” (${ref})` }));
+    let cur = { id, ch: +ch, v: +v };
+    let lastKey = `${cur.id}.${cur.ch}.${cur.v}`;
+
+    async function render(animate) {
+      const b = m.books.find((x) => x.id === cur.id);
+      const data = await getBook(cur.id, LANG);
+      const text = (data.chapters[cur.ch] || {})[cur.v] || '';
+      const ref = LANG === 'de' ? `${b.de.name} ${cur.ch},${cur.v}` : `${b.en.name} ${cur.ch}:${cur.v}`;
+      view.innerHTML = `
+        <div class="crumbs"><button data-nav="bible">${t('nav.bible')}</button> › <button data-nav="reader">${esc(b[LANG].name)} ${cur.ch}</button> › <span>${esc(LANG === 'de' ? 'V. ' + cur.v : 'v. ' + cur.v)}</span></div>
+        <div class="card verse-hero verse-page${animate ? ' swap' : ''}">
+          <div class="kicker">${t('devotion.scripture')}</div>
+          <div class="verse-text">“${esc(text)}”</div>
+          <div class="verse-ref">${esc(ref)}</div>
+          <div class="verse-actions">
+            <button class="btn btn-primary" data-a="read">${t('verse.read')}</button>
+            <button class="btn btn-ghost" data-a="another">↻ ${t('verse.another')}</button>
+            <button class="btn btn-ghost" data-a="ask">✝ ${t('sheet.ask')}</button>
+            <button class="btn btn-ghost" data-a="share">↗ ${t('sheet.share')}</button>
+            <button class="btn btn-ghost" data-a="copy">⧉ ${t('sheet.copy')}</button>
+          </div>
+        </div>`;
+      $('.crumbs [data-nav="bible"]').addEventListener('click', () => navigate('bible'));
+      $('.crumbs [data-nav="reader"]').addEventListener('click', () => navigate('reader', { id: cur.id, ch: cur.ch, scrollVerse: cur.v }));
+      view.querySelector('[data-a="read"]').addEventListener('click', () => navigate('reader', { id: cur.id, ch: cur.ch, scrollVerse: cur.v }));
+      view.querySelector('[data-a="another"]').addEventListener('click', onAnother);
+      view.querySelector('[data-a="copy"]').addEventListener('click', () => { navigator.clipboard?.writeText(`“${text}” — ${ref}`); toast(t('toast.copied')); });
+      view.querySelector('[data-a="share"]').addEventListener('click', () => shareVerse(text, ref));
+      view.querySelector('[data-a="ask"]').addEventListener('click', () => navigate('companion', { seed: (LANG === 'de' ? 'Hilf mir, diesen Vers zu verstehen: ' : 'Help me understand this verse: ') + `“${text}” (${ref})` }));
+    }
+
+    async function onAnother() {
+      const nv = await pickVerse(timeBucket(), lastKey);
+      cur = { id: nv.book, ch: nv.c, v: nv.v };
+      lastKey = verseKey(nv);
+      render(true);
+    }
+
+    render(false);
   };
 
   function shareVerse(text, ref) {

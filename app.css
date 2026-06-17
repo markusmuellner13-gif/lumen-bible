@@ -279,6 +279,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .sheet { background:
   radial-gradient(140% 70% at 50% 0%, color-mix(in srgb, var(--gold) 9%, var(--surface)) 0%, var(--surface) 55%); }
 
+/* ===== Verse & Prayer full pages ===== */
+.verse-page, .prayer-page {
+  min-height: calc(100dvh - 230px);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(26px, 6vw, 40px) clamp(20px, 5vw, 30px);
+  animation: rise 0.4s ease-out both;
+}
+.verse-page .kicker { color: var(--gold-soft); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.68rem; font-weight: 700; margin-bottom: 4px; }
+.verse-page .verse-text { font-size: clamp(1.4rem, 5.5vw, 1.95rem); line-height: 1.6; margin: 14px 0 18px; }
+.verse-page .verse-ref { font-size: 1rem; }
+.verse-page .verse-actions { margin-top: 22px; }
+
+.prayer-page { color: var(--ink); }
+.prayer-page .kicker { color: var(--gold); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.68rem; font-weight: 700; }
+.prayer-page .dev-title { font-family: var(--scripture); font-size: clamp(1.5rem, 6vw, 2rem); margin: 8px 0 16px; }
+.prayer-page .prayer-text { font-family: var(--scripture); font-size: clamp(1.08rem, 4vw, 1.24rem); line-height: 1.8; }
+.prayer-page .verse-actions { display: flex; gap: 8px; margin-top: 26px; flex-wrap: wrap; }
+
 /* ===== Fluid sizing ===== */
 .greeting { font-size: clamp(1.5rem, 6vw, 2rem); }
 .verse-text { font-size: clamp(1.18rem, 4.6vw, 1.45rem); }

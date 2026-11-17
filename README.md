@@ -15,7 +15,8 @@
 - **A verse for this moment** — the home screen shows a verse fitting the **time of day**.
 - **Closed-app notifications** — true Web Push delivers a time-fitting verse / prayer reminder even when the app is fully closed, in the windows you choose (morning/midday/evening/night).
 - **Spiritual Companion (AI)** — share what is on your heart; receive a compassionate word, a fitting Bible verse, a prayer, and Catholic encouragement.
-- **Prayers** — Our Father, Hail Mary, Glory Be, Morning/Evening, Act of Contrition, Come Holy Spirit, Guardian Angel, St. Michael — bilingual.
+- **Prayers** — Our Father, Hail Mary, Glory Be, Morning/Evening, Act of Contrition, Come Holy Spirit, Guardian Angel, St. Michael, plus **grace before meals** (Tischgebete) — bilingual, in a scrollable, sectioned list.
+- **Guided Rosary** — pray the **full rosary** (5 decades with Creed, opening Aves for faith/hope/love, Fatima prayer, Salve Regina) or a **single decade**; choose Joyful/Luminous/Sorrowful/Glorious mysteries (today's set preselected). A counter badge (e.g. 3/10) and bead row show exactly which Ave Maria you are on; German Aves include the traditional mystery clause. Tap, swipe, arrow keys or buttons to advance; progress is saved so you can resume.
 - **Fully responsive** — phone (bottom tab bar), laptop & desktop (side navigation), fluid type — fits any screen.
 - **Catholic-fitting design** — glowing-cross icon, stained-glass & light-ray backgrounds, light/dawn & dark/night themes, adjustable Scripture size, reverent loading screen.
 

@@ -941,13 +941,31 @@
   async function boot() {
     applyTheme(); applyTextSize(); applyI18nStatic(); bindShell();
     await Promise.all([getManifest(), getVerses()]);
-    navigate('home');
+    // after an automatic update-reload, come back to the same screen (e.g. mid-rosary)
+    let restore = null;
+    try { restore = JSON.parse(sessionStorage.getItem('lumen.restore')); sessionStorage.removeItem('lumen.restore'); } catch {}
+    if (restore && Object.prototype.hasOwnProperty.call(VIEWS, restore.name) && restore.name !== 'companion') navigate(restore.name, restore.params || {});
+    else navigate('home');
     // reveal app, hide splash
     $('#app').hidden = false;
     setTimeout(() => { $('#splash').classList.add('hide'); }, 350);
     // SW
     if ('serviceWorker' in navigator) {
-      try { await navigator.serviceWorker.register('/sw.js'); pushConfigToSW(); } catch {}
+      // when a new version of the app is deployed, switch to it right away
+      const hadController = !!navigator.serviceWorker.controller;
+      let reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!hadController || reloading || chatHistory.length) return; // never interrupt a Companion conversation
+        reloading = true;
+        try { sessionStorage.setItem('lumen.restore', JSON.stringify(current)); } catch {}
+        location.reload();
+      });
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+        pushConfigToSW();
+        // home-screen apps are often resumed instead of relaunched — check for updates whenever the app comes back
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+      } catch {}
     }
     // handle launch from notification (?verse=book.ch.v)
     const params = new URLSearchParams(location.search);

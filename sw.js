@@ -1,10 +1,10 @@
 /* ===== Lumen service worker ===== */
-const VERSION = 'lumen-v5';
+const VERSION = 'lumen-v6';
 const SHELL = 'lumen-shell-' + VERSION;
 const RUNTIME = 'lumen-runtime-' + VERSION;
 
 const SHELL_ASSETS = [
-  '/', '/index.html', '/app.css', '/app.js', '/manifest.webmanifest',
+  '/', '/index.html', '/app.css?v=6', '/app.js?v=6', '/manifest.webmanifest',
   '/data/manifest.json', '/data/verses.json', '/data/devotions.json',
   '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/badge.png',
 ];
@@ -33,6 +33,17 @@ self.addEventListener('fetch', (e) => {
   // app-shell navigation
   if (request.mode === 'navigate') {
     e.respondWith(fetch(request).catch(() => caches.match('/index.html')));
+    return;
+  }
+
+  // the app's own code: network-first so updates show up immediately; cache only as offline fallback
+  if (/^\/(app\.js|app\.css|sw\.js|manifest\.webmanifest)$/.test(url.pathname)) {
+    e.respondWith(
+      fetch(request).then((res) => {
+        if (res && res.status === 200) { const copy = res.clone(); caches.open(RUNTIME).then((c) => c.put(request, copy)); }
+        return res;
+      }).catch(() => caches.match(request).then((r) => r || caches.match(url.pathname, { ignoreSearch: true })))
+    );
     return;
   }
 

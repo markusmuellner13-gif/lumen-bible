@@ -1,5 +1,5 @@
 /* ===== Lumen service worker ===== */
-const VERSION = 'lumen-v4';
+const VERSION = 'lumen-v5';
 const SHELL = 'lumen-shell-' + VERSION;
 const RUNTIME = 'lumen-runtime-' + VERSION;
 

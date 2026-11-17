@@ -93,6 +93,35 @@
     'toast.devotiondone': 'Devotion complete — God bless you 🕊', 'toast.notifoff': 'Notifications disabled',
   });
 
+  Object.assign(I18N.de, {
+    'prayers.daily': 'Tägliche Gebete', 'prayers.meal': 'Tischgebete',
+    'rosary.title': 'Rosenkranz', 'rosary.card.title': 'Den Rosenkranz beten',
+    'rosary.card.sub': 'Großer oder kleiner Rosenkranz · mit Zähler bei jedem Ave Maria', 'rosary.card.cta': 'Öffnen',
+    'rosary.intro': 'Betrachte mit Maria das Leben Jesu. Wähle die Geheimnisse und ob du den ganzen Rosenkranz oder ein einzelnes Gesätz beten möchtest — die App führt dich Perle für Perle.',
+    'rosary.mysteries': 'Geheimnisse', 'rosary.today': 'heute',
+    'rosary.big': 'Großer Rosenkranz', 'rosary.big.sub': 'Alle fünf Gesätze mit Glaubensbekenntnis und Salve Regina · ca. 20 Min.',
+    'rosary.small': 'Kleiner Rosenkranz', 'rosary.small.sub': 'Ein Gesätz · ca. 5 Min. — tippe auf ein Geheimnis, um zu beginnen.',
+    'rosary.start': 'Beginnen', 'rosary.resume': 'Fortsetzen', 'rosary.resume.title': 'Angefangener Rosenkranz',
+    'rosary.decade': 'Gesätz', 'rosary.of': 'von', 'rosary.opening': 'Eröffnung', 'rosary.closing': 'Abschluss',
+    'rosary.next': 'Weiter', 'rosary.prev': 'Zurück', 'rosary.amen': 'Amen',
+    'rosary.done.title': 'Rosenkranz gebetet', 'rosary.done.text': 'Danke, dass du dir Zeit für das Gebet genommen hast.\nMaria, Königin des heiligen Rosenkranzes, bitte für uns.',
+    'rosary.finish': 'Fertig', 'rosary.again': 'Noch einmal',
+  });
+  Object.assign(I18N.en, {
+    'prayers.daily': 'Daily prayers', 'prayers.meal': 'Grace before meals',
+    'rosary.title': 'Holy Rosary', 'rosary.card.title': 'Pray the Rosary',
+    'rosary.card.sub': 'Full rosary or a single decade · with a counter on every Hail Mary', 'rosary.card.cta': 'Open',
+    'rosary.intro': 'Contemplate the life of Jesus with Mary. Choose the mysteries and whether to pray the full rosary or a single decade — the app guides you bead by bead.',
+    'rosary.mysteries': 'Mysteries', 'rosary.today': 'today',
+    'rosary.big': 'Full Rosary', 'rosary.big.sub': 'All five decades with the Creed and Hail Holy Queen · approx. 20 min',
+    'rosary.small': 'Single Decade', 'rosary.small.sub': 'One decade · approx. 5 min — tap a mystery to begin.',
+    'rosary.start': 'Begin', 'rosary.resume': 'Continue', 'rosary.resume.title': 'Rosary in progress',
+    'rosary.decade': 'Decade', 'rosary.of': 'of', 'rosary.opening': 'Opening', 'rosary.closing': 'Closing',
+    'rosary.next': 'Next', 'rosary.prev': 'Back', 'rosary.amen': 'Amen',
+    'rosary.done.title': 'Rosary complete', 'rosary.done.text': 'Thank you for taking time to pray.\nQueen of the Most Holy Rosary, pray for us.',
+    'rosary.finish': 'Done', 'rosary.again': 'Pray again',
+  });
+
   // ---------- State ----------
   const store = {
     get lang() { return localStorage.getItem('lumen.lang') || ((navigator.language || 'de').startsWith('en') ? 'en' : 'de'); },
@@ -180,7 +209,7 @@
   }
   function navigate(name, params = {}) {
     current = { name, params };
-    const tabMap = { chapters: 'bible', reader: 'bible', verse: 'bible', devotion: 'home', prayer: 'prayers' };
+    const tabMap = { chapters: 'bible', reader: 'bible', verse: 'bible', devotion: 'home', prayer: 'prayers', rosary: 'prayers', rosaryPray: 'prayers' };
     setActiveTab(tabMap[name] || name);
     view.scrollTop = 0; window.scrollTo(0, 0);
     const fn = VIEWS[name] || VIEWS.home;
@@ -463,13 +492,33 @@
     { id: 'guardian-angel', de: ['Schutzengelgebet', 'Heiliger Schutzengel mein, lass mich dir empfohlen sein;\nin allen Nöten steh mir bei und halte mich von Sünden frei.\nBei Tag und Nacht, wo immer ich bin, weise mich auf das Gute hin. Amen.'], en: ['Guardian Angel', 'Angel of God, my guardian dear, to whom God’s love commits me here,\never this day be at my side, to light and guard, to rule and guide. Amen.'] },
     { id: 'evening', de: ['Abendgebet', 'Herr, bevor der Tag zu Ende geht, danke ich dir für alles Gute.\nVergib mir, wo ich gefehlt habe, und nimm meine Schuld von mir.\nBehüte mich und alle, die ich liebe, in dieser Nacht.\nIn deinen Händen lege ich mich nieder. Amen.'], en: ['Evening Prayer', 'Lord, before the day comes to its end, I thank you for all that was good.\nForgive me where I have failed, and take my sin from me.\nWatch over me and all whom I love this night.\nInto your hands I lay myself down. Amen.'] },
     { id: 'michael', de: ['Gebet zum hl. Erzengel Michael', 'Heiliger Erzengel Michael, verteidige uns im Kampfe;\ngegen die Bosheit und die Nachstellungen des Teufels sei unser Schutz.\nGott gebiete ihm, so bitten wir flehentlich;\ndu aber, Fürst der himmlischen Heerscharen, stoße den Satan in die Hölle. Amen.'], en: ['Prayer to St. Michael', 'St. Michael the Archangel, defend us in battle.\nBe our protection against the wickedness and snares of the devil.\nMay God rebuke him, we humbly pray;\nand do thou, O Prince of the heavenly host, cast into hell Satan and all evil spirits. Amen.'] },
+    // ---- Grace before meals ----
+    { id: 'meal-bless', group: 'meal', de: ['Segne, Herr, uns und diese Gaben', 'Segne, Herr, uns und diese Gaben,\ndie wir von deiner Güte nun empfangen,\ndurch Christus, unseren Herrn. Amen.'], en: ['Bless Us, O Lord', 'Bless us, O Lord, and these thy gifts,\nwhich we are about to receive from thy bounty,\nthrough Christ our Lord. Amen.'] },
+    { id: 'meal-guest', group: 'meal', de: ['Komm, Herr Jesus, sei unser Gast', 'Komm, Herr Jesus, sei du unser Gast\nund segne, was du uns bescheret hast. Amen.'], en: ['Come, Lord Jesus, Be Our Guest', 'Come, Lord Jesus, be our guest,\nand let these gifts to us be blessed. Amen.'] },
+    { id: 'meal-psalm', group: 'meal', de: ['Aller Augen warten auf dich', 'Aller Augen warten auf dich, o Herr,\nund du gibst ihnen ihre Speise zur rechten Zeit.\nDu öffnest deine Hand\nund erfüllst alles, was lebt, mit Segen. Amen.'], en: ['The Eyes of All Look to You', 'The eyes of all look to you, O Lord,\nand you give them their food in due season.\nYou open your hand\nand fill every living thing with blessing. Amen.'] },
+    { id: 'meal-father', group: 'meal', de: ['Segne, Vater, diese Speise', 'Segne, Vater, diese Speise,\nuns zur Kraft und dir zum Preise. Amen.'], en: ['Bless, O Father, This Our Food', 'Bless, O Father, this our food,\nto give us strength and you the praise. Amen.'] },
   ];
 
   VIEWS.prayers = () => {
+    const item = (p) => `<button class="prayer-item" data-id="${p.id}"><span class="pi-name">${esc(p[LANG][0])}</span><span class="pi-go">›</span></button>`;
+    const daily = PRAYERS.filter((p) => !p.group);
+    const meal = PRAYERS.filter((p) => p.group === 'meal');
     view.innerHTML = `
       <div class="greeting">${t('prayers.title')}</div>
       <div class="greeting-sub">${t('prayers.sub')}</div>
-      <div class="prayer-list">${PRAYERS.map((p) => `<button class="prayer-item" data-id="${p.id}"><span class="pi-name">${esc(p[LANG][0])}</span><span class="pi-go">›</span></button>`).join('')}</div>`;
+      <button class="card dev-card ros-card" data-act="rosary">
+        <div class="dev-card-inner">
+          <div class="kicker">📿 ${t('rosary.title')}</div>
+          <div class="dev-card-title">${t('rosary.card.title')}</div>
+          <div class="dev-card-ref">${t('rosary.card.sub')}</div>
+          <span class="dev-card-cta">${t('rosary.card.cta')} ›</span>
+        </div>
+      </button>
+      <div class="section-title">${t('prayers.daily')}</div>
+      <div class="prayer-list">${daily.map(item).join('')}</div>
+      <div class="section-title">🍞 ${t('prayers.meal')}</div>
+      <div class="prayer-list">${meal.map(item).join('')}</div>`;
+    view.querySelector('[data-act="rosary"]').addEventListener('click', () => navigate('rosary'));
     view.querySelectorAll('.prayer-item').forEach((it) => it.addEventListener('click', () => navigate('prayer', { id: it.dataset.id })));
   };
   VIEWS.prayer = ({ id }) => {
@@ -489,6 +538,246 @@
     view.querySelector('[data-a="copy"]').addEventListener('click', () => { navigator.clipboard?.writeText(p[LANG][0] + '\n\n' + p[LANG][1]); toast(t('toast.copied')); });
     view.querySelector('[data-a="share"]').addEventListener('click', () => shareVerse(p[LANG][1], p[LANG][0]));
   };
+
+  // ---------- Rosary ----------
+  // Mysteries: `de`/`en` = short title; `ins` = German clause inserted after "Jesus" in each Ave Maria.
+  const ROSARY_SETS = {
+    joyful: { de: ['Freudenreich', 'Freudenreiche Geheimnisse'], en: ['Joyful', 'Joyful Mysteries'], m: [
+      { de: 'Verkündigung', en: 'The Annunciation', ins: 'den du, o Jungfrau, vom Heiligen Geist empfangen hast' },
+      { de: 'Heimsuchung', en: 'The Visitation', ins: 'den du, o Jungfrau, zu Elisabet getragen hast' },
+      { de: 'Geburt Jesu', en: 'The Nativity', ins: 'den du, o Jungfrau, in Betlehem geboren hast' },
+      { de: 'Darstellung im Tempel', en: 'The Presentation in the Temple', ins: 'den du, o Jungfrau, im Tempel aufgeopfert hast' },
+      { de: 'Wiederfinden im Tempel', en: 'The Finding in the Temple', ins: 'den du, o Jungfrau, im Tempel wiedergefunden hast' },
+    ] },
+    luminous: { de: ['Lichtreich', 'Lichtreiche Geheimnisse'], en: ['Luminous', 'Luminous Mysteries'], m: [
+      { de: 'Taufe im Jordan', en: 'The Baptism in the Jordan', ins: 'der von Johannes getauft worden ist' },
+      { de: 'Hochzeit zu Kana', en: 'The Wedding at Cana', ins: 'der sich bei der Hochzeit in Kana offenbart hat' },
+      { de: 'Verkündigung des Reiches Gottes', en: 'The Proclamation of the Kingdom', ins: 'der uns das Reich Gottes verkündet hat' },
+      { de: 'Verklärung', en: 'The Transfiguration', ins: 'der auf dem Berg verklärt worden ist' },
+      { de: 'Einsetzung der Eucharistie', en: 'The Institution of the Eucharist', ins: 'der uns die Eucharistie geschenkt hat' },
+    ] },
+    sorrowful: { de: ['Schmerzhaft', 'Schmerzhafte Geheimnisse'], en: ['Sorrowful', 'Sorrowful Mysteries'], m: [
+      { de: 'Todesangst am Ölberg', en: 'The Agony in the Garden', ins: 'der für uns Blut geschwitzt hat' },
+      { de: 'Geißelung', en: 'The Scourging at the Pillar', ins: 'der für uns gegeißelt worden ist' },
+      { de: 'Dornenkrönung', en: 'The Crowning with Thorns', ins: 'der für uns mit Dornen gekrönt worden ist' },
+      { de: 'Kreuztragung', en: 'The Carrying of the Cross', ins: 'der für uns das schwere Kreuz getragen hat' },
+      { de: 'Kreuzigung', en: 'The Crucifixion', ins: 'der für uns gekreuzigt worden ist' },
+    ] },
+    glorious: { de: ['Glorreich', 'Glorreiche Geheimnisse'], en: ['Glorious', 'Glorious Mysteries'], m: [
+      { de: 'Auferstehung', en: 'The Resurrection', ins: 'der von den Toten auferstanden ist' },
+      { de: 'Himmelfahrt', en: 'The Ascension', ins: 'der in den Himmel aufgefahren ist' },
+      { de: 'Sendung des Heiligen Geistes', en: 'The Descent of the Holy Spirit', ins: 'der uns den Heiligen Geist gesandt hat' },
+      { de: 'Aufnahme Mariens in den Himmel', en: 'The Assumption of Mary', ins: 'der dich, o Jungfrau, in den Himmel aufgenommen hat' },
+      { de: 'Krönung Mariens', en: 'The Coronation of Mary', ins: 'der dich, o Jungfrau, im Himmel gekrönt hat' },
+    ] },
+  };
+  const ROSARY_ORDER = ['joyful', 'luminous', 'sorrowful', 'glorious'];
+  const ROSARY_BY_DAY = ['glorious', 'joyful', 'sorrowful', 'glorious', 'luminous', 'sorrowful', 'joyful']; // Sun … Sat
+  const ROSARY_TEXT = {
+    creed: {
+      de: ['Apostolisches Glaubensbekenntnis', 'Ich glaube an Gott, den Vater, den Allmächtigen,\nden Schöpfer des Himmels und der Erde,\nund an Jesus Christus, seinen eingeborenen Sohn, unsern Herrn,\nempfangen durch den Heiligen Geist, geboren von der Jungfrau Maria,\ngelitten unter Pontius Pilatus, gekreuzigt, gestorben und begraben,\nhinabgestiegen in das Reich des Todes,\nam dritten Tage auferstanden von den Toten,\naufgefahren in den Himmel;\ner sitzt zur Rechten Gottes, des allmächtigen Vaters;\nvon dort wird er kommen, zu richten die Lebenden und die Toten.\nIch glaube an den Heiligen Geist,\ndie heilige katholische Kirche, Gemeinschaft der Heiligen,\nVergebung der Sünden, Auferstehung der Toten\nund das ewige Leben. Amen.'],
+      en: ['Apostles’ Creed', 'I believe in God, the Father almighty,\nCreator of heaven and earth,\nand in Jesus Christ, his only Son, our Lord,\nwho was conceived by the Holy Spirit, born of the Virgin Mary,\nsuffered under Pontius Pilate, was crucified, died and was buried;\nhe descended into hell;\non the third day he rose again from the dead;\nhe ascended into heaven,\nand is seated at the right hand of God the Father almighty;\nfrom there he will come to judge the living and the dead.\nI believe in the Holy Spirit,\nthe holy catholic Church, the communion of saints,\nthe forgiveness of sins, the resurrection of the body,\nand life everlasting. Amen.'],
+    },
+    fatima: {
+      de: ['O mein Jesus (Fatima-Gebet)', 'O mein Jesus, verzeih uns unsere Sünden,\nbewahre uns vor dem Feuer der Hölle,\nführe alle Seelen in den Himmel,\nbesonders jene, die deiner Barmherzigkeit am meisten bedürfen.'],
+      en: ['O My Jesus (Fatima Prayer)', 'O my Jesus, forgive us our sins,\nsave us from the fires of hell;\nlead all souls to heaven,\nespecially those in most need of thy mercy.'],
+    },
+    salve: {
+      de: ['Salve Regina', 'Sei gegrüßt, o Königin, Mutter der Barmherzigkeit,\nunser Leben, unsre Wonne und unsre Hoffnung, sei gegrüßt!\nZu dir rufen wir verbannte Kinder Evas;\nzu dir seufzen wir trauernd und weinend in diesem Tal der Tränen.\nWohlan denn, unsre Fürsprecherin, wende deine barmherzigen Augen uns zu\nund nach diesem Elend zeige uns Jesus, die gebenedeite Frucht deines Leibes.\nO gütige, o milde, o süße Jungfrau Maria.\n\nBitte für uns, heilige Gottesmutter,\nauf dass wir würdig werden der Verheißungen Christi. Amen.'],
+      en: ['Hail, Holy Queen', 'Hail, holy Queen, Mother of mercy,\nour life, our sweetness and our hope.\nTo thee do we cry, poor banished children of Eve;\nto thee do we send up our sighs, mourning and weeping in this valley of tears.\nTurn then, most gracious advocate, thine eyes of mercy toward us,\nand after this our exile show unto us the blessed fruit of thy womb, Jesus.\nO clement, O loving, O sweet Virgin Mary.\n\nPray for us, O holy Mother of God,\nthat we may be made worthy of the promises of Christ. Amen.'],
+    },
+    aveDe: ['Gegrüßet seist du, Maria, voll der Gnade, der Herr ist mit dir.\nDu bist gebenedeit unter den Frauen, und gebenedeit ist die Frucht deines Leibes, Jesus', '.\nHeilige Maria, Mutter Gottes, bitte für uns Sünder, jetzt und in der Stunde unseres Todes. Amen.'],
+    introDe: ['der in uns den Glauben vermehre', 'der in uns die Hoffnung stärke', 'der in uns die Liebe entzünde'],
+    introLabel: { de: ['Bitte um Glauben', 'Bitte um Hoffnung', 'Bitte um Liebe'], en: ['For an increase of faith', 'For an increase of hope', 'For an increase of charity'] },
+  };
+  const ROSARY_BASE = { cross: 'cross', 'our-father': 'our-father', 'hail-mary': 'hail-mary', glory: 'glory-be' };
+
+  // Builds the ordered list of beads/prayers. sec: 'open' | 'close' | decade index (0–4).
+  function rosarySteps(kind, m) {
+    const s = [];
+    const push = (type, sec, extra = {}) => s.push({ type, sec, ...extra });
+    const decade = (d, mys) => {
+      push('our-father', d, { mys });
+      for (let i = 1; i <= 10; i++) push('hail-mary', d, { mys, n: i, of: 10 });
+      push('glory', d, { mys });
+      push('fatima', d, { mys });
+    };
+    if (kind === 'big') {
+      push('cross', 'open'); push('creed', 'open'); push('our-father', 'open');
+      for (let i = 1; i <= 3; i++) push('hail-mary', 'open', { intro: i - 1, n: i, of: 3 });
+      push('glory', 'open');
+      for (let d = 0; d < 5; d++) decade(d, d);
+      push('salve', 'close'); push('cross', 'close');
+    } else {
+      push('cross', 'open');
+      decade(0, m);
+      push('cross', 'close');
+    }
+    return s;
+  }
+  function validRosary(r) {
+    if (!r || (r.kind !== 'big' && r.kind !== 'small') || !ROSARY_ORDER.includes(r.set)) return false;
+    if (!Number.isInteger(r.m) || r.m < 0 || r.m > 4 || !Number.isInteger(r.step)) return false;
+    return r.step >= 0 && r.step < rosarySteps(r.kind, r.m).length;
+  }
+  function loadRosary() { try { const r = JSON.parse(localStorage.getItem('lumen.rosary')); return validRosary(r) ? r : null; } catch { return null; } }
+  function saveRosary(r) { try { localStorage.setItem('lumen.rosary', JSON.stringify(r)); } catch {} }
+  function clearRosary() { try { localStorage.removeItem('lumen.rosary'); } catch {} }
+
+  function rosaryKicker(st, kind, set) {
+    if (st.sec === 'open') return t('rosary.opening');
+    if (st.sec === 'close') return t('rosary.closing');
+    const name = ROSARY_SETS[set][LANG][1];
+    return kind === 'big' ? `${t('rosary.decade')} ${st.sec + 1} ${t('rosary.of')} 5 · ${name}` : `${t('rosary.decade')} · ${name}`;
+  }
+  function rosaryStepTitle(st) {
+    const base = ROSARY_BASE[st.type];
+    return base ? PRAYERS.find((p) => p.id === base)[LANG][0] : ROSARY_TEXT[st.type][LANG][0];
+  }
+  function rosaryStepHTML(st, set) {
+    if (st.type === 'hail-mary' && LANG === 'de') {
+      const ins = st.intro != null ? ROSARY_TEXT.introDe[st.intro] : (st.mys != null ? ROSARY_SETS[set].m[st.mys].ins : null);
+      return esc(ROSARY_TEXT.aveDe[0]) + (ins ? `, <span class="ros-ins">${esc(ins)}</span>` : '') + esc(ROSARY_TEXT.aveDe[1]);
+    }
+    const base = ROSARY_BASE[st.type];
+    return esc(base ? PRAYERS.find((p) => p.id === base)[LANG][1] : ROSARY_TEXT[st.type][LANG][1]);
+  }
+  function rosaryPosition(r) {
+    const st = rosarySteps(r.kind, r.m)[r.step];
+    let pos = rosaryKicker(st, r.kind, r.set);
+    if (st.type === 'hail-mary') pos += ` · ${LANG === 'de' ? 'Ave' : 'Hail Mary'} ${st.n}/${st.of}`;
+    else pos += ` · ${rosaryStepTitle(st)}`;
+    return pos;
+  }
+
+  VIEWS.rosary = ({ set } = {}) => {
+    const today = ROSARY_BY_DAY[new Date().getDay()];
+    const sel = ROSARY_ORDER.includes(set) ? set : today;
+    current.params = { set: sel };
+    const S = ROSARY_SETS[sel];
+    const saved = loadRosary();
+    view.innerHTML = `
+      <div class="crumbs"><button data-nav="prayers">${t('prayers.title')}</button> › <span>${t('rosary.title')}</span></div>
+      <div class="card dev-hero verse-hero ros-hero">
+        <div class="kicker">📿 ${t('rosary.title')}</div>
+        <h2 class="dev-title">${t('rosary.card.title')}</h2>
+        <div class="ros-hero-text">${t('rosary.intro')}</div>
+      </div>
+      ${saved ? `<button class="card ros-resume" data-act="resume">
+        <span class="ros-resume-info">
+          <span class="ros-resume-kicker">${t('rosary.resume.title')}</span>
+          <span class="ros-opt-title">${saved.kind === 'big' ? t('rosary.big') : t('rosary.small')} · ${esc(ROSARY_SETS[saved.set][LANG][0])}</span>
+          <span class="ros-opt-sub">${esc(rosaryPosition(saved))}</span>
+        </span>
+        <span class="btn btn-primary">${t('rosary.resume')} ›</span>
+      </button>` : ''}
+      <div class="section-title">${t('rosary.mysteries')}</div>
+      <div class="ros-sets" role="tablist">${ROSARY_ORDER.map((k) => `<button class="ros-set ${k === sel ? 'on' : ''}" data-set="${k}" role="tab" aria-selected="${k === sel}">${esc(ROSARY_SETS[k][LANG][0])}${k === today ? `<span class="ros-today">${t('rosary.today')}</span>` : ''}</button>`).join('')}</div>
+      <div class="card prayer-bg ros-option">
+        <div class="ros-opt-title">${t('rosary.big')}</div>
+        <div class="ros-opt-sub">${t('rosary.big.sub')}</div>
+        <button class="btn btn-primary btn-block" data-act="big" style="margin-top:16px">📿 ${t('rosary.start')} · ${esc(S[LANG][1])}</button>
+      </div>
+      <div class="card ros-option">
+        <div class="ros-opt-title">${t('rosary.small')}</div>
+        <div class="ros-opt-sub">${t('rosary.small.sub')}</div>
+        <div class="prayer-list ros-myst-list">${S.m.map((mm, i) => `<button class="prayer-item" data-m="${i}"><span class="ros-num">${i + 1}</span><span class="ros-myst-name"><span class="pi-name">${esc(mm[LANG])}</span>${LANG === 'de' ? `<span class="ros-myst-ins">Jesus, ${esc(mm.ins)}</span>` : ''}</span><span class="pi-go">›</span></button>`).join('')}</div>
+      </div>`;
+    $('.crumbs [data-nav="prayers"]').addEventListener('click', () => navigate('prayers'));
+    view.querySelector('[data-act="resume"]')?.addEventListener('click', () => navigate('rosaryPray', saved));
+    view.querySelectorAll('.ros-set').forEach((b) => b.addEventListener('click', () => VIEWS.rosary({ set: b.dataset.set })));
+    view.querySelector('[data-act="big"]').addEventListener('click', () => navigate('rosaryPray', { kind: 'big', set: sel, m: 0, step: 0 }));
+    view.querySelectorAll('.ros-myst-list .prayer-item').forEach((b) => b.addEventListener('click', () => navigate('rosaryPray', { kind: 'small', set: sel, m: +b.dataset.m, step: 0 })));
+  };
+
+  let rosaryKeyNav = null; // arrow-key handler while praying
+  VIEWS.rosaryPray = ({ kind, set, m = 0, step = 0, done = false } = {}) => {
+    rosaryKeyNav = null;
+    m = Number.isInteger(+m) ? +m : 0;
+    if (!validRosary({ kind, set, m, step: 0 })) { navigate('rosary'); return; }
+    const steps = rosarySteps(kind, m);
+    const kindLabel = kind === 'big' ? t('rosary.big') : t('rosary.small');
+    const crumbs = `<div class="crumbs"><button data-nav="prayers">${t('prayers.title')}</button> › <button data-nav="rosary">${t('rosary.title')}</button> › <span>${kindLabel}</span></div>`;
+    const bindCrumbs = () => {
+      $('.crumbs [data-nav="prayers"]').addEventListener('click', () => navigate('prayers'));
+      $('.crumbs [data-nav="rosary"]').addEventListener('click', () => navigate('rosary', { set }));
+    };
+
+    if (done) {
+      view.innerHTML = `${crumbs}
+        <div class="card prayer-bg prayer-page ros-done">
+          <div class="ros-done-ico">🕊</div>
+          <div class="kicker">📿 ${t('rosary.title')} · ${esc(ROSARY_SETS[set][LANG][1])}</div>
+          <h2 class="dev-title">${t('rosary.done.title')}</h2>
+          <div class="prayer-text">${esc(t('rosary.done.text'))}</div>
+          <div class="verse-actions">
+            <button class="btn btn-primary" data-a="finish">${t('rosary.finish')}</button>
+            <button class="btn btn-soft" data-a="again">↻ ${t('rosary.again')}</button>
+          </div>
+        </div>`;
+      bindCrumbs();
+      view.querySelector('[data-a="finish"]').addEventListener('click', () => navigate('prayers'));
+      view.querySelector('[data-a="again"]').addEventListener('click', () => navigate('rosaryPray', { kind, set, m, step: 0 }));
+      return;
+    }
+
+    let i = Math.min(Math.max(0, Number.isInteger(+step) ? +step : 0), steps.length - 1);
+    view.innerHTML = `${crumbs}
+      <div class="card prayer-bg prayer-page ros-pray" id="rosCard" aria-live="polite"></div>
+      <div class="reader-nav ros-nav">
+        <button class="btn btn-soft" id="rosPrev">‹ ${t('rosary.prev')}</button>
+        <button class="btn btn-primary" id="rosNext"></button>
+      </div>`;
+    bindCrumbs();
+    const card = $('#rosCard'), prev = $('#rosPrev'), next = $('#rosNext');
+
+    function paint() {
+      const st = steps[i];
+      const mys = st.mys != null ? ROSARY_SETS[set].m[st.mys] : null;
+      const line = mys ? mys[LANG] : (st.intro != null ? ROSARY_TEXT.introLabel[LANG][st.intro] : '');
+      const pct = (((i + 1) / steps.length) * 100).toFixed(1);
+      card.innerHTML = `
+        <div class="ros-progress" aria-hidden="true"><span style="width:${pct}%"></span></div>
+        ${st.n ? `<div class="ros-count" aria-label="${st.n} ${t('rosary.of')} ${st.of}"><b>${st.n}</b><small>/${st.of}</small></div>` : ''}
+        <div class="ros-step">
+          <div class="kicker">${esc(rosaryKicker(st, kind, set))}</div>
+          ${line ? `<div class="ros-mys">✦ ${esc(line)}</div>` : ''}
+          ${st.n ? `<div class="ros-beads" aria-hidden="true">${Array.from({ length: st.of }, (_, k) => `<span class="ros-bead${k < st.n - 1 ? ' done' : k === st.n - 1 ? ' cur' : ''}"></span>`).join('')}</div>` : ''}
+          <h2 class="dev-title">${esc(rosaryStepTitle(st))}</h2>
+          <div class="prayer-text">${rosaryStepHTML(st, set)}</div>
+        </div>`;
+      prev.disabled = i === 0;
+      next.textContent = i === steps.length - 1 ? `${t('rosary.amen')} ✓` : `${t('rosary.next')} ›`;
+      current.params = { kind, set, m, step: i };
+      saveRosary({ kind, set, m, step: i });
+    }
+    function go(d) {
+      if (d > 0 && i === steps.length - 1) { clearRosary(); navigate('rosaryPray', { kind, set, m, done: true }); return; }
+      const ni = i + d;
+      if (ni < 0 || ni >= steps.length) return;
+      i = ni; paint();
+      if (card.getBoundingClientRect().top < 0) window.scrollTo(0, 0);
+    }
+
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+    // tap the card to advance (like moving to the next bead); swipe left/right on touch screens
+    let tx = null, ty = null, swiped = false;
+    card.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; swiped = false; }, { passive: true });
+    card.addEventListener('touchend', (e) => {
+      if (tx == null) return;
+      const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { swiped = true; go(dx < 0 ? 1 : -1); }
+    });
+    card.addEventListener('click', () => { if (swiped) { swiped = false; return; } if (!window.getSelection()?.toString()) go(1); });
+    rosaryKeyNav = go;
+    paint();
+  };
+  document.addEventListener('keydown', (e) => {
+    if (current.name !== 'rosaryPray' || !rosaryKeyNav || e.target.closest?.('input, textarea')) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); rosaryKeyNav(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); rosaryKeyNav(-1); }
+  });
 
   // ---------- Settings ----------
   VIEWS.settings = () => {

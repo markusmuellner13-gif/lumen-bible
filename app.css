@@ -92,7 +92,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .lang-toggle .lang-sep { color: var(--ink-faint); }
 :root[data-lang="de"] .lang-de, :root[data-lang="en"] .lang-en { color: var(--gold); }
 
-.view { flex: 1; padding: 18px 16px 96px; max-width: 720px; width: 100%; margin: 0 auto; outline: none; }
+.view { flex: 1; padding: 18px 16px calc(112px + var(--safe-bottom)); max-width: 720px; width: 100%; margin: 0 auto; outline: none; }
 .view-enter { animation: fade 0.32s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
 
@@ -302,6 +302,71 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .prayer-page .prayer-text { font-family: var(--scripture); font-size: clamp(1.08rem, 4vw, 1.24rem); line-height: 1.8; }
 .prayer-page .verse-actions { display: flex; gap: 8px; margin-top: 26px; flex-wrap: wrap; }
 
+/* ===== Rosary ===== */
+.ros-card { margin-top: 10px; }
+.ros-card .dev-card-ref { font-weight: 500; line-height: 1.45; }
+.ros-hero .ros-hero-text { line-height: 1.6; opacity: 0.92; font-size: 0.95rem; }
+.ros-resume {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left;
+  margin-top: 14px; border-color: var(--gold);
+  background: radial-gradient(140% 120% at 0% 0%, color-mix(in srgb, var(--gold) 14%, var(--surface)) 0%, var(--surface) 70%);
+}
+.ros-resume .btn { flex: none; }
+.ros-resume-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ros-resume-kicker { color: var(--gold); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.64rem; font-weight: 700; }
+.ros-sets { display: flex; gap: 8px; flex-wrap: wrap; }
+.ros-set {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--line); font-size: 0.86rem; font-weight: 600; color: var(--ink-soft);
+}
+.ros-set.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.ros-today { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); font-weight: 700; }
+.ros-option { margin-top: 14px; }
+.ros-opt-title { font-family: var(--scripture); font-size: 1.22rem; color: var(--ink); }
+.ros-opt-sub { font-size: 0.84rem; color: var(--ink-soft); margin-top: 4px; line-height: 1.45; }
+.ros-myst-list { margin-top: 14px; }
+.ros-myst-list .prayer-item { justify-content: flex-start; gap: 12px; background: var(--surface-2); }
+.ros-myst-list .pi-go { margin-left: auto; }
+.ros-num {
+  flex: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--gold); color: var(--gold); font-weight: 700; font-size: 0.85rem;
+}
+.ros-myst-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ros-myst-ins { font-size: 0.78rem; color: var(--ink-soft); line-height: 1.35; }
+
+/* guided praying */
+.ros-pray { overflow: hidden; cursor: pointer; user-select: none; -webkit-user-select: none; min-height: min(calc(100dvh - 320px), 520px); justify-content: flex-start; padding: clamp(24px, 5vw, 36px) clamp(18px, 5vw, 30px); }
+.ros-pray .dev-title { font-size: clamp(1.3rem, 5vw, 1.7rem); margin-bottom: 12px; }
+.ros-pray .prayer-text { font-size: clamp(1.04rem, 3.9vw, 1.2rem); line-height: 1.65; }
+.ros-progress { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: color-mix(in srgb, var(--gold) 16%, transparent); }
+.ros-progress span { display: block; height: 100%; background: var(--gold); border-radius: 0 4px 4px 0; transition: width 0.3s ease; }
+.ros-count {
+  position: absolute; top: 18px; right: 18px; z-index: 1;
+  min-width: 66px; height: 66px; padding: 0 8px; border-radius: 999px;
+  display: flex; align-items: baseline; justify-content: center; padding-top: 14px;
+  background: var(--gold); color: #2a1c00; font-family: var(--scripture);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--gold) 22%, transparent), 0 8px 20px rgba(120, 80, 10, 0.25);
+}
+.ros-count b { font-size: 1.85rem; line-height: 1; }
+.ros-count small { font-size: 0.9rem; font-weight: 700; opacity: 0.75; margin-left: 1px; }
+.ros-step { animation: verseSwap 0.32s ease-out both; }
+.ros-pray .ros-step .kicker { padding-right: 84px; }
+.ros-mys { margin-top: 8px; padding-right: 84px; font-family: var(--scripture); font-style: italic; color: var(--accent); font-size: 1.02rem; }
+.ros-pray .dev-title { margin-top: 12px; }
+.ros-ins { color: var(--gold); font-weight: 700; }
+.ros-beads { display: flex; flex-wrap: wrap; gap: 9px; margin: 14px 0 2px; padding-right: 84px; align-items: center; }
+.ros-bead { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gold); opacity: 0.55; transition: transform 0.2s; }
+.ros-bead.done { background: var(--gold); opacity: 0.85; }
+.ros-bead.cur { background: var(--gold); opacity: 1; transform: scale(1.35); box-shadow: 0 0 10px color-mix(in srgb, var(--gold) 70%, transparent); }
+.ros-nav {
+  margin-top: 6px; padding: 12px 0 4px; position: sticky; bottom: calc(var(--safe-bottom) + 64px); z-index: 5;
+  background: linear-gradient(to top, var(--bg) 75%, color-mix(in srgb, var(--bg) 0%, transparent));
+}
+.ros-nav .btn:disabled { opacity: 0.4; }
+.ros-done { text-align: center; align-items: center; }
+.ros-done .verse-actions { justify-content: center; }
+.ros-done-ico { font-size: 2.6rem; margin-bottom: 6px; }
+
 /* ===== Fluid sizing ===== */
 .greeting { font-size: clamp(1.5rem, 6vw, 2rem); }
 .verse-text { font-size: clamp(1.18rem, 4.6vw, 1.45rem); }
@@ -335,6 +400,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .topbar-brand { display: none; }
   .view { max-width: 780px; margin: 0 auto; padding-top: 26px; padding-bottom: 60px; }
   .chat-wrap { height: calc(100dvh - 64px - var(--safe-top) - 40px); }
+  .ros-nav { bottom: 16px; }
 }
 
 /* ===== Responsive: large desktop (more breathing room) ===== */
